@@ -423,9 +423,8 @@ class FeatureContext implements Context
 		}
 
 		$mysql_query = sprintf(
-			'mysql -h"localhost" -u"%s" -p"%s" -e"SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME=%s"',
+			'mysql -h"localhost" -u"%s" -p"" -e"SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME=%s"',
 			'root',
-			'',
 			$site_info['db_name']
 		);
 
