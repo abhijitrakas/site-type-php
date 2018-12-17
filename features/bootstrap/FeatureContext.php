@@ -422,10 +422,15 @@ class FeatureContext implements Context
 			throw new exception( 'Database credentials not found.' );
 		}
 
-		$mysql_query = sprintf(
-			'mysql -u"%s" -e"SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME=%s"',
-			'root',
+		$sql = sprintf(
+			'SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME="%s"',
 			$site_info['db_name']
+		);
+
+		$mysql_query = sprintf(
+			'mysql -u"%s" -e"%s"',
+			'root',
+			$sql
 		);
 
 		$db_connection = exec( $mysql_query );
