@@ -263,6 +263,8 @@ class FeatureContext implements Context
 			'php-local-db.test',
 			'php-local-redis.test',
 			'php-local-db-redis.test',
+			'php-remote-db-local-redis.test',
+			'php-remote-db-global-redis.test',
 		];
 
 		$result          = EE::launch( 'sudo bin/ee site list --format=text', false,  true );
@@ -403,6 +405,34 @@ class FeatureContext implements Context
 
 		if ( ! empty( $db_connection ) ) {
 			throw new Exception( $db_connection  );
+		}
+	}
+
+	/**
+	 * @Then Check remote mysql database connection for :site
+	 */
+	public function checkRemoteMysqlDb( string $site )
+	{
+		$db         = new SQLite3( EE_ROOT_DIR . '/db/ee.sqlite' );
+		$query      = "SELECT `db_name` FROM sites WHERE site_url='".$site."' LIMIT 1;";
+		$exec_query = $db->query( $query );
+		$site_info  = $exec_query->fetchArray( SQLITE3_ASSOC );
+
+		if ( empty( $site_info['db_name'] ) ) {
+			throw new exception( 'Database credentials not found.' );
+		}
+
+		$mysql_query = sprintf(
+			'mysql -h"localhost" -u"%s" -p"%s" -e"SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME=%s"',
+			'root',
+			'',
+			$site_info['db_name']
+		);
+
+		$db_connection = exec( $mysql_query );
+
+		if ( empty( $db_connection ) ) {
+			throw new Exception( 'Error establishing database connection!' );
 		}
 	}
 

@@ -186,3 +186,25 @@ Feature: Site Command
         | db         |
         | redis      |
         | phpmyadmin |
+
+  Scenario: Create PHP site with remote DB and local redis
+    When I run 'bin/ee site create php-remote-db-local-redis.test --cache --type=php --with-db --dbuser="root" --dbpass="" --dbhost="localhost" --with-local-redis'
+    Then After delay of 2 seconds
+    And The site 'php-remote-db-local-redis.test' should have webroot
+    And The site 'php-remote-db-local-redis.test' should have index file
+    And Request on 'php-remote-db-local-redis.test' should contain following headers:
+      | header          |
+      | HTTP/1.1 200 OK |
+    And Check remote mysql database connection for 'php-remote-db-local-redis.test'
+    And Check local redis cache for 'php-remote-db-local-redis.test'
+
+  Scenario: Create PHP site with remote DB and global redis
+    When I run 'bin/ee site create php-remote-db-global-redis.test --cache --type=php --with-db --dbuser="travis" --dbpass="" --dbhost="127.0.0.1"'
+    Then After delay of 2 seconds
+    And The site 'php-remote-db-global-redis.test' should have webroot
+    And The site 'php-remote-db-global-redis.test' should have index file
+    And Request on 'php-remote-db-global-redis.test' should contain following headers:
+      | header          |
+      | HTTP/1.1 200 OK |
+    And Check remote mysql database connection for 'php-remote-db-global-redis.test'
+    And Check global redis cache for 'php-remote-db-global-redis.test'
